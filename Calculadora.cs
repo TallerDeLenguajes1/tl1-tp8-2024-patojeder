@@ -1,114 +1,103 @@
-namespace EspacioCalculadora
+namespace misClases // Es un agrupador logico de clases
 {
     public class Calculadora
     {
-        double dato;
-        public double Resultado{get=>dato;}
+        private double dato;
 
-        List<Operacion>historial;
+        public Calculadora(double valorInicial)//Constructor
+        {
+            dato = valorInicial;
+        }
 
-        public List<Operacion> Historial{get=>historial;set => historial = value;}
         public void Sumar(double termino)
         {
-           double anterior = dato;
-           dato += termino;
-           TipoOperacion operacion = TipoOperacion.Suma;
-           Operacion op = new Operacion(anterior, dato, operacion);
-            if(Historial == null)
-            {
-                Historial = new List<Operacion>();
-
-            }
-            Historial.Add(op);
-
+            dato += termino;
         }
+
         public void Restar(double termino)
         {
-            double anterior = dato;
             dato -= termino;
-            TipoOperacion operacion = TipoOperacion.Resta;
-            Operacion op = new Operacion(anterior, dato, operacion);
-            if(Historial == null)
-            {
-                Historial = new List<Operacion>();
-
-            }
-            Historial.Add(op);
         }
+
         public void Multiplicar(double termino)
         {
-            double anterior = dato;
             dato *= termino;
-            TipoOperacion operacion = TipoOperacion.Multiplicacion;
-            Operacion op = new Operacion(anterior, dato, operacion);
-            if(Historial == null)
-            {
-                Historial = new List<Operacion>();
-
-            }
-            Historial.Add(op);
         }
         public void Dividir(double termino)
         {
-            if(termino != 0)
+            if (termino != 0)
             {
-                double anterior = dato;
                 dato /= termino;
-                TipoOperacion operacion = TipoOperacion.Division;
-                Operacion op = new Operacion(anterior, dato, operacion);
-                if(Historial == null)
-                {
-                    Historial = new List<Operacion>();
-
-                }
-            Historial.Add(op);
-            }else
+            }
+            else
             {
-                Console.WriteLine("Error! Division en 0");
+                throw new DivideByZeroException("No se puede dividir por cero.");
             }
         }
         public void Limpiar()
         {
-            double anterior = dato;
             dato = 0;
-            TipoOperacion operacion = TipoOperacion.Limpiar;
-            Operacion op = new Operacion(anterior, dato, operacion);
-            if(Historial == null)
-            {
-                Historial = new List<Operacion>();
-
-            }
-            Historial.Add(op);
         }
 
-        public enum TipoOperacion
+        public double Resultado
         {
-            Suma,
-            Resta,
-            Multiplicacion,
-            Division,
-            Limpiar
-        }
-
-        public class Operacion
-        {
-            private double resultadoAnterior;
-            private double nuevoValor;
-
-            private TipoOperacion operacion;
-
-            public double Resultado{get=>resultadoAnterior; set => resultadoAnterior = value;}
-            public double NuevoValor{get=>nuevoValor; set=> nuevoValor = value;}
-            public TipoOperacion OperacionRealizada { get => operacion; set => operacion = value; }
-
-            public Operacion(double anterior, double resultadoNuevo, TipoOperacion operacion)
-            {
-                Resultado = anterior;
-                NuevoValor = resultadoNuevo;
-                OperacionRealizada = operacion;
-            }
-
+            get => dato;//Sirve para mostrar, pero no para escribir o modificar, para eso esta el set
+            set => dato = value;
         }
     }
-    
+
+    public enum TipoOperacion
+    {
+        Suma,
+        Resta,
+        Multiplicacion,
+        Division,
+        Limpiar
+    }
+
+    public class Operacion
+    {
+        private double resultadoAnterior;
+        private double nuevoValor;
+        private TipoOperacion operacion;
+
+        public Operacion(double resultadoAnterior, double nuevoValor, TipoOperacion operacion)
+        {
+            this.resultadoAnterior = (double)resultadoAnterior;
+            this.nuevoValor = (double)nuevoValor;
+            this.operacion = operacion;
+        }
+
+        public double NuevoValor { get => nuevoValor; }
+        public double ResultadoAnterior { get => resultadoAnterior; }
+
+        public static void MostrarOperaciones(List<Operacion> lista)
+        {
+            int contador = 1;
+            foreach (var operacion in lista)
+            {
+                Console.WriteLine("Operacion " + contador);
+                Console.WriteLine("Operacion: " + operacion.operacion);
+                Console.WriteLine("Resultado anterior: " + operacion.ResultadoAnterior);
+                Console.WriteLine("Nuevo resultado: " + operacion.NuevoValor);
+                switch (operacion.operacion)
+                {
+                    case TipoOperacion.Suma:
+                        Console.WriteLine("Es decir, realizaste una " + operacion.operacion + ": " + operacion.ResultadoAnterior + " + " + (operacion.NuevoValor - operacion.ResultadoAnterior));
+                        break;
+                    case TipoOperacion.Resta:
+                        Console.WriteLine("Es decir, realizaste una " + operacion.operacion + ": " + operacion.ResultadoAnterior + " - " + (operacion.ResultadoAnterior - operacion.NuevoValor));
+                        break;
+                    case TipoOperacion.Multiplicacion:
+                        Console.WriteLine("Es decir, realizaste una " + operacion.operacion + ": " + operacion.ResultadoAnterior + " x " + (operacion.NuevoValor / operacion.ResultadoAnterior));
+                        break;
+                    case TipoOperacion.Division:
+                        Console.WriteLine("Es decir, realizaste una " + operacion.operacion + ": " + operacion.ResultadoAnterior + " / " + (operacion.ResultadoAnterior / operacion.NuevoValor));
+                        break;
+                }
+                Console.WriteLine();
+                contador++;
+            }
+        }
+    }
 }
